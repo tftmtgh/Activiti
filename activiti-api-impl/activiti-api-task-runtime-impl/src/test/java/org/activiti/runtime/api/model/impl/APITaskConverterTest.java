@@ -43,8 +43,7 @@ public class APITaskConverterTest {
     }
 
     @Test
-    public void convertFromTaskShouldSetAllFieldsInTheConvertedTask() {
-        //WHEN
+    public void should_convertTask_when_allFieldsAreSet() {
         Date now = new Date();
         Task convertedTask = taskConverter.from(
                 taskBuilder()
@@ -60,10 +59,10 @@ public class APITaskConverterTest {
                         .withProcessInstanceId("testProcessInstanceId")
                         .withParentTaskId("testParentTaskId")
                         .withFormKey("testFormKey")
+                        .withAppVersion(1)
                         .build()
         );
 
-        //THEN
         assertThat(convertedTask)
                 .isNotNull()
                 .extracting(Task::getId,
@@ -78,7 +77,8 @@ public class APITaskConverterTest {
                             Task::getProcessInstanceId,
                             Task::getParentTaskId,
                             Task::getFormKey,
-                            Task::getStatus)
+                            Task::getStatus,
+                            Task::getAppVersion)
                 .containsExactly("testTaskId",
                                  "testUser",
                                  "testTaskName",
@@ -91,7 +91,17 @@ public class APITaskConverterTest {
                                  "testProcessInstanceId",
                                  "testParentTaskId",
                                  "testFormKey",
-                                 ASSIGNED);
+                                 ASSIGNED,
+                                 "1");
+    }
+
+    @Test
+    public void should_convertTask_when_appVersionNull() {
+        Task convertedTask = taskConverter.from(taskBuilder().withAppVersion(null).build());
+        assertThat(convertedTask)
+                .isNotNull()
+                .extracting(Task::getAppVersion)
+                .isNull();
     }
 
     @Test
